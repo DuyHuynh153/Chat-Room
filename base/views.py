@@ -82,7 +82,9 @@ def home(request):  #  request mean that: maybe it is GET  method or POST method
     
     topics = Topic.objects.all()
     room_count = rooms.count()
-    room_messages = Message.objects.filter(Q(room__topic__name__icontains =q))
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains = q))
+    # room_messages = Message.objects.filter(room__topic__name__iexact=q)
+
     
     
     
