@@ -72,11 +72,17 @@ def home(request):  #  request mean that: maybe it is GET  method or POST method
     
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     
-    rooms = Room.objects.filter(
-        Q(topic__name__icontains = q) |
-        Q(name__icontains = q) |
-        Q(desription__icontains = q) 
+    # rooms = Room.objects.filter(
+    #     Q(topic__name__icontains = q) |
+    #     Q(name__icontains = q) |
+    #     Q(desription__icontains = q) 
         
+        
+    #     )
+    rooms = Room.objects.filter(
+        Q(topic__name__iexact = q) |
+        Q(name__iexact = q) |
+        Q(desription__iexact = q) 
         
         )
     
@@ -216,3 +222,10 @@ def updateUser(request):
             
     context = {'form':form}
     return render(request, "base/update-user.html", context)
+
+def topicsPage(request):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+
+    topics = Topic.objects.filter(name__icontains=q)
+    context = {"topics": topics}
+    return render(request, "base/topics.html", context)
