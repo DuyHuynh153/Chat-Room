@@ -1,13 +1,11 @@
 from django.shortcuts import render, redirect
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-from .models import Room, Topic, Message
-from .forms import RoomForm, UserForm
+from .models import Room, Topic, Message,User
+from .forms import RoomForm, UserForm,MyUserCreationForm
 
 
 # Create your views here.
@@ -27,22 +25,22 @@ def loginPage(request):
         return redirect("home")
     
     if request.method == "POST":
-        username = request.POST.get("username").lower()
+        email = request.POST.get("email").lower()
         password = request.POST.get("password")
         
         # TODO: check if user exists in database
         try:
-            user = User.objects.get(username = username)
+            user = User.objects.get(email = email)
         except:
             messages.error(request, "user dose not exist !")
             
         # TODO: return user if correct information else return None
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
             return redirect("home")
         else:
-            messages.error(request, "username OR password dose not exist !")
+            messages.error(request, "username/email OR password dose not exist !")
 
     context ={'page':page}
     return render(request, "base/login_register.html", context)
@@ -54,9 +52,9 @@ def logoutUser(request):
     return redirect("home")
 
 def registerPage(request):
-    form = UserCreationForm()   
+    form = MyUserCreationForm()   
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = MyUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
@@ -86,7 +84,13 @@ def home(request):  #  request mean that: maybe it is GET  method or POST method
         
         )
     
-    topics = Topic.objects.all()
+    # Get the topics and annotate them with the count of related rooms
+    topics = Topic.objects.annotate(room_count=Count('room'))
+
+    # Order the topics by the count of related rooms in descending order
+    topics = topics.order_by('-room_count')[:3]  # Get the top 3 topics
+    
+    # topics = Topic.objects.all()[0:4] #  limit only get 3 topics of all topic
     room_count = rooms.count()
     room_messages = Message.objects.filter(Q(room__topic__name__icontains = q))
     # room_messages = Message.objects.filter(room__topic__name__iexact=q)
@@ -214,7 +218,7 @@ def updateUser(request):
     form = UserForm(instance=user)
 
     if request.method == "POST":
-        form = UserForm(request.POST, instance=user)
+        form = UserForm(request.POST,request.FILES, instance=user)
         if form.is_valid():
             form.save()
             return redirect("user-profile", pk=user.id)
@@ -229,3 +233,12 @@ def topicsPage(request):
     topics = Topic.objects.filter(name__icontains=q)
     context = {"topics": topics}
     return render(request, "base/topics.html", context)
+
+def activityPage(request):
+    
+    room_messages = Message.objects.all()
+
+    context = {'room_messages': room_messages}
+
+    return render(request, "base/activity.html", context)
+    
