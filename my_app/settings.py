@@ -21,15 +21,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-q$u@q-t-l97=9pf0u+g^=&c&)hbxjkigfa186(*4_vg#6$qz)k'
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = 'django-insecure-q$u@q-t-l97=9pf0u+g^=&c&)hbxjkigfa186(*4_vg#6$qz)k'
+# SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = os.environ.get("DEBUG" ,"False").lower() == "true" 
+# DEBUG=True
+DEBUG = True
+# DEBUG = os.environ.get("DEBUG" ,"False").lower() == "true" 
+ALLOWED_HOSTS=["127.0.0.1"]
 
-# ALLOWED_HOSTS = []
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+# ALLOWED_HOSTS = ["localhost:8000"]
+# ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -92,23 +94,23 @@ WSGI_APPLICATION = 'my_app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 # DATABASES = {
-#     'default': dj_database_url.config(
-#         # Replace this value with your local database's connection string.
-#         default='postgres://chat_room_django_render_user:5TQhacAreBetNVAu6x63EJ1LKYcNTh5g@dpg-co5s9buv3ddc7395rn80-a.oregon-postgres.render.com/chat_room_django_render',
-#         conn_max_age=600
-#     )
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
 # }
 
-database_url = os.environ.get("DATABASE_URL")
-DATABASES['default'] = dj_database_url.parse(database_url)
+DATABASES = {
+    'default': dj_database_url.config(
+        # Replace this value with your local database's connection string.
+        default='postgres://chat_room_django_render_user:5TQhacAreBetNVAu6x63EJ1LKYcNTh5g@dpg-co5s9buv3ddc7395rn80-a.oregon-postgres.render.com/chat_room_django_render',
+        conn_max_age=600
+    )
+}
+
+# database_url = os.environ.get("postgres://chat_room_django_render_user:5TQhacAreBetNVAu6x63EJ1LKYcNTh5g@dpg-co5s9buv3ddc7395rn80-a.oregon-postgres.render.com/chat_room_django_render")
+# DATABASES['default'] = dj_database_url.parse(database_url)
 
 
 #  postgres://chat_room_django_render_user:5TQhacAreBetNVAu6x63EJ1LKYcNTh5g@dpg-co5s9buv3ddc7395rn80-a.oregon-postgres.render.com/chat_room_django_render
@@ -156,13 +158,18 @@ STATICFILES_DIRS = [
 ]
 
 
-if not DEBUG:
+# if not DEBUG:
+#     SECRET_KEY = 'django-insecure-q$u@q-t-l97=9pf0u+g^=&c&)hbxjkigfa186(*4_vg#6$qz)k'
+
     
 
-    MEDIA_ROOT = BASE_DIR / 'static/images'
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+MEDIA_ROOT = BASE_DIR / 'static/images'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # ALLOWED_HOSTS = ['*']
+    # ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
-# STATIC_ROOT 
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
