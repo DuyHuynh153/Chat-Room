@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import dj_database_url
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-q$u@q-t-l97=9pf0u+g^=&c&)hbxjkigfa186(*4_vg#6$qz)k'
+# SECRET_KEY = 'django-insecure-q$u@q-t-l97=9pf0u+g^=&c&)hbxjkigfa186(*4_vg#6$qz)k'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = os.environ.get("DEBUG" ,"False").lower() == "true" 
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -50,6 +54,7 @@ AUTH_USER_MODEL = 'base.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     # cors middleware middle
     "corsheaders.middleware.CorsMiddleware",
 
@@ -94,6 +99,20 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         # Replace this value with your local database's connection string.
+#         default='postgres://chat_room_django_render_user:5TQhacAreBetNVAu6x63EJ1LKYcNTh5g@dpg-co5s9buv3ddc7395rn80-a.oregon-postgres.render.com/chat_room_django_render',
+#         conn_max_age=600
+#     )
+# }
+
+database_url = os.environ.get("DATABASE_URL")
+DATABASES['default'] = dj_database_url.parse(database_url)
+
+
+#  postgres://chat_room_django_render_user:5TQhacAreBetNVAu6x63EJ1LKYcNTh5g@dpg-co5s9buv3ddc7395rn80-a.oregon-postgres.render.com/chat_room_django_render
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -136,7 +155,13 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static/'
 ]
 
-MEDIA_ROOT = BASE_DIR / 'static/images'
+
+if not DEBUG:
+    
+
+    MEDIA_ROOT = BASE_DIR / 'static/images'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # STATIC_ROOT 
 
 # Default primary key field type
