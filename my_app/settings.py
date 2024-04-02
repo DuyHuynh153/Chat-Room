@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-q$u@q-t-l97=9pf0u+g^=&c&)hbxjkigfa186(*4_vg#6$qz)k
 # DEBUG=True
 DEBUG = True
 # DEBUG = os.environ.get("DEBUG" ,"False").lower() == "true" 
-ALLOWED_HOSTS=["127.0.0.1"]
+ALLOWED_HOSTS=["127.0.0.1","chat-room-mubm.onrender.com"]
 
 # ALLOWED_HOSTS = ["localhost:8000"]
 # ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
