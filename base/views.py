@@ -112,6 +112,8 @@ def room(request, pk): # request mean that: maybe it is GET method or POST
     
     
     if request.method == 'POST':
+        
+        
         message = Message.objects.create(
             user  = request.user,
             room = room,

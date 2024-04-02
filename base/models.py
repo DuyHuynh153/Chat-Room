@@ -13,7 +13,7 @@ class User(AbstractUser):
     #  need to install Pillow library " python3 -m pip install pillow"
     avatar = models.ImageField(null = True,default ="avatar.svg")
 
-    # USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
 
